@@ -1,6 +1,7 @@
 package generation;
 
 import gui.Constants;
+import generation.SingleRandom;
 
 
 /**
@@ -56,6 +57,7 @@ public class MazeBuilder implements Runnable {
 			System.out.println("Assignment: functionality to make maze generation deterministic not implemented yet! Fix this! Program stops!");
 			System.exit(0) ;
 			// TODO: implement code that makes sure that if MazeBuilder.build is called for same the skill level twice, it will deliver the same results
+			SingleRandom.setSeed(5);
 			// HINT: check http://download.oracle.com/javase/6/docs/api/java/util/Random.html\
 		}
 		random = SingleRandom.getRandom();
