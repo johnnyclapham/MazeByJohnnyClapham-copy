@@ -47,4 +47,5 @@ public interface Order {
 	 * @param current percentage of job completion
 	 */
 	void updateProgress(int percentage) ;
+
 }

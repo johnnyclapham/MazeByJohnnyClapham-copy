@@ -25,7 +25,14 @@ public class MazeFactoryTest {
 		mazeFactory = new MazeFactory(det);
 		dummyOrder = new DummyOrder(1, Builder.DFS, det);
 		mazeFactory.order(dummyOrder);
+		
+		/*
+		 * "the MazeFactory operates a background thread
+			such that you need to make the test wait for the termination of the MazeBuilder
+			thread before the test proceeds."
+		 */
 		mazeFactory.waitTillDelivered();
+		
 		configuration = dummyOrder.getConfiguration();
 		
 	}
