@@ -44,7 +44,7 @@ public class MazeFactoryTest {
 	@Test
 	public void isThereAnExit(){
 		int whereTheExit = 10;    // initialize (any number will do)
-		Distance mazeDistance = configuration.getMazedists(); // retrieve distance from exit (completion)
+		Distance mazeDistance = configuration.getMazedists(); // retrieve distanc
 		
 		//nested for loop to navigate through maze matrix
 		for (int k = 0; k < configuration.getWidth(); k++) {
@@ -74,9 +74,42 @@ public class MazeFactoryTest {
 		
 	}
 	
+	@Test
+	public void isThereAnExitPath(){
+		
+		//Distance mazeDistance = configuration.getMazedists(); // retrieve distance
+		int width = configuration.getWidth();
+		int height = configuration.getHeight();
+		
+		//create 3 variables to act as tools in ending the test as either pass or fail
+		boolean answer = true;
+		boolean wrong = false;
+		boolean correct = true;
+		
+		int low = 1; // shortest pathlength	
+		int high = width * height; // longest path length
+		
+		//nested for loop to navigate through maze matrix (same as before)
+		for (int k = 0; k < configuration.getWidth(); k++) {
+			for (int m = 0; m < configuration.getHeight(); m++) {
+				int distanceToExit = configuration.getDistanceToExit(k, m); // get path length to exit
+				if (distanceToExit > high){  // if distance is over what we set as high threshold, it fails the test
+					assertTrue(wrong);
+				}
+				else if (distanceToExit < low ){// if distance is lower what we set as low threshold, it fails the test
+					assertTrue(wrong);
+				}
+				else { // if neither failures occur, it passes the test
+					assertTrue(correct);
+			}
+			
+		}
+		
+
+	}
 	
 	
 	
-	
+	}
 	
 }
