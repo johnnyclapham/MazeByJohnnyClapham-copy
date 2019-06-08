@@ -81,8 +81,7 @@ public class MazeFactoryTest {
 		int width = configuration.getWidth();
 		int height = configuration.getHeight();
 		
-		//create 3 variables to act as tools in ending the test as either pass or fail
-		boolean answer = true;
+		//create 2 variables to act as tools in ending the test as either pass or fail
 		boolean wrong = false;
 		boolean correct = true;
 		

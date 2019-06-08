@@ -22,31 +22,39 @@ public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 	
 	
 	protected void generatePathways() {
-		// initialize 2d array with desired dimensions
+		mazeMatrix = new int[width][height]; // initialize 2d array with desired dimensions
 		
-		// create int filler value that will be filled in to empty cell
-		// loop through maze and assign a unique number (filler) for each cell
-		
-				 // set position equal to filler
-				 // increase filler to have different value for each cell
-		
-		//create array list for number of walls (mutable)
-		// fill the list using method that also checks for illegal additions
-		
-		 //while we still have cells to alter
-			
-		// select random wall to work on
-		//current cell x & y coords
-		
-			//neighbor x & y coords
-			  
-			// check if neighbor is in bounds of legal moves (no borders)
-				// if so
-					// check if the chosen cell and its neighbor have different values
-						// make them the same value
-						
-		}
+		int filler = 1;// create int filler value that will be filled in to empty cell
+		for (int i = 0; i < height; i++) {// loop through maze and assign a unique number (filler) for each cell
+			for (int m = 0;  m< width; m++) {
+				mazeMatrix[i][m] = filler; // set position equal to filler
+				filler++; // increase filler to have different value for each cell
 				
+			}
+		}
+		
+		final ArrayList<Wall> cellsToAlter = new ArrayList<Wall>();//create array list for number of walls (mutable)
+		listTheWalls(cellsToAlter); // fill the list using method that also checks for illegal additions
+		
+		while(!cellsToAlter.isEmpty()) {
+			
+			Wall currentWall = getRandomCellToWorkOn(cellsToAlter); // select random wall to work on
+			int cellY = currentWall.getY();   //current cell x & y coords
+			int cellX = currentWall.getX();  
+
+			int nY = currentWall.getNeighborY();	//neighbor x & y coords
+			int nX = currentWall.getNeighborX();   
+
+			if (nY >= 0 && nX >= 0) { // check if neighbor is in bounds of legal moves (no borders)
+				if (nX< width && nY< height) {// if so
+					if (mazeMatrix[cellX][cellY] != mazeMatrix[nX][nY]) {// check if the chosen cell and its neighbor have different values
+						changeNeighbourVal(currentWall, cellY, cellX, nY, nX); // make them the same value
+						
+					}
+				}
+			}
+		}
+	}
 	
 	
 	/*
@@ -54,12 +62,18 @@ public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 	 */
 
     private void listTheWalls(ArrayList<Wall> walls){
-    	// loop through maze and assign a unique number (filler) for each cell
-			
-					  // attribute new values to wall object at the specified position
-					  // if wall is valid (not border) add it to our wall list
-					
+    	for (int i = 0; i < height; i++) {// loop through maze and assign a unique number (filler) for each cell
+			for (int m = 0;  m< width; m++) {
+				for (CardinalDirection aa : CardinalDirection.values()) {
+					Wall wall = new Wall(i, m, aa);     // attribute new values to wall object at the specified position
+					if (cells.canDelete(wall)){        // if wall is valid (not border) add it to our wall list
+						walls.add(wall); 
+					}
+				}
+			}
 				
+				
+			}
 	}
 	
 	private void changeNeighbourVal(Wall wall, int cellX, int cellY, int nX, int nY){

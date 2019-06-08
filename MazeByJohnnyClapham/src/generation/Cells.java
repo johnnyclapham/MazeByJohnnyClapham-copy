@@ -210,6 +210,26 @@ public class Cells {
 		// return true if neighbor has not been visited before
 		return isFirstVisit(x+dx, y+dy);
 	}
+	
+	
+	/*
+	 * copied canGo into duplicate method structure altered
+	 * to find if we can delete a wall. we do  not want to be
+	 * deleting borders!
+	 */
+	public boolean canDelete(Wall wall) {
+		int x = wall.getX();
+		int y = wall.getY();
+		int[] d = wall.getDirection().getDirection() ;
+		int dx = d[0];
+		int dy = d[1];
+		// borders limit rooms (but for potential doors) and the outside limit of the maze
+		if (hasBorder(x, y, dx, dy))
+			return false;
+		// if there is no border, neighbor should be in legal range of values
+		// return true if neighbor has not been visited before
+		return true; // difference here
+	}
 	/**
 	 * checks if cell (x,y) has a border in the given direction (dx,dy)
 	 * @param x coordinate of cell
