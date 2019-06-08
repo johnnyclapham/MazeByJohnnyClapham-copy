@@ -210,8 +210,7 @@ public class Cells {
 		// return true if neighbor has not been visited before
 		return isFirstVisit(x+dx, y+dy);
 	}
-	
-	
+
 	/*
 	 * copied canGo into duplicate method structure altered
 	 * to find if we can delete a wall. we do  not want to be
@@ -228,7 +227,7 @@ public class Cells {
 			return false;
 		// if there is no border, neighbor should be in legal range of values
 		// return true if neighbor has not been visited before
-		return true; // difference here
+		return true;//difference here
 	}
 	/**
 	 * checks if cell (x,y) has a border in the given direction (dx,dy)

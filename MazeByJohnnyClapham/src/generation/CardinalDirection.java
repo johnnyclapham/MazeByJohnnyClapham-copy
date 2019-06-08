@@ -21,7 +21,7 @@ package generation;
  * 
  * @author pk
  *
- */
+ */ 
 public enum CardinalDirection {
 	North, East, South, West ;
 	/** 
@@ -117,7 +117,7 @@ public enum CardinalDirection {
 	 */
 	public int[] getDirection() {
 		/* Compare with Cells.java for consistency
-		 Directions: right=east, down=south, left=west, up=north
+		Directions: right=east, down=south, left=west, up=north
 		public static int[] DIRS_X = { 1, 0, -1, 0 };
 		public static int[] DIRS_Y = { 0, 1, 0, -1 };
 		 */
