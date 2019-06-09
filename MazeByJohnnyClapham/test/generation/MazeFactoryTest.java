@@ -19,6 +19,10 @@ public class MazeFactoryTest {
 	// Stub object created for testing purposes
 	private DummyOrder dummyOrder;
 	
+	/**
+	 * sets up the maze
+	 * @throws Exception
+	 */
 	@Before
 	public void setUp() throws Exception {
 		boolean det = true;
@@ -41,6 +45,9 @@ public class MazeFactoryTest {
 	public void tearDown() throws Exception {
 	}
 
+	/**
+	 * Checks if there exits an exit within the generated maze.
+	 */
 	@Test
 	public void isThereAnExit(){
 		int whereTheExit = 10;    // initialize (any number will do)
@@ -59,6 +66,9 @@ public class MazeFactoryTest {
 		assertEquals(11,whereTheExit); // 10(arbitrary #) + 1 (exit) = 11
 	}
 	
+	/**
+	 * Checks if dimensions of the maze are correct based on skill
+	 */
 	@Test 
 	public void dimensionChecker() {
 		int skillLevel = dummyOrder.getSkillLevel();
@@ -74,10 +84,15 @@ public class MazeFactoryTest {
 		
 	}
 	
+	/**
+	 * scans through every cell in the generated maze and checks if there is a viable
+	 * exit path available from every cell. (That we have no closed in rooms wasting 
+	 * maze space!)
+	 */
 	@Test
 	public void isThereAnExitPath(){
 		
-		//Distance mazeDistance = configuration.getMazedists(); // retrieve distance
+		
 		int width = configuration.getWidth();
 		int height = configuration.getHeight();
 		

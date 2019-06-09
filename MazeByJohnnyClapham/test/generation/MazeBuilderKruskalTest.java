@@ -24,11 +24,17 @@ public class MazeBuilderKruskalTest{
 	public void tearDown() throws Exception {
 	}
 	
+	/**
+	 * checks if Kruskal maze was built
+	 */
 	@Test
     public void doesKruskalBuild() {
         assertNotNull(dummyOrder);
     }
 
+	/**
+	 * copied code from Kruskal class to see if implementation is right
+	 */
 	@Test
 	public void changeNeighbourValTest(){
 		int[][] mazeMatrix = new int[5][5];
