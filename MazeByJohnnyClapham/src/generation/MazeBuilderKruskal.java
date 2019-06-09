@@ -2,8 +2,10 @@ package generation;
 import generation.CardinalDirection;
 import java.util.ArrayList;
 
-/*
-  * This class has the responsibility to create a maze of given dimensions (width, height) 
+
+
+/**
+ * This class has the responsibility to create a maze of given dimensions (width, height) 
  * together with a solution based on a distance matrix.
  * The MazeBuilder implements Runnable such that it can be run a separate thread.
  * The MazeFactory has a MazeBuilder and handles the thread management.   
@@ -11,10 +13,9 @@ import java.util.ArrayList;
  * Algorithm leaves walls in tact that carry the border flag.
  * Borders are used to keep the outside surrounding of the maze enclosed and 
  * to make sure that rooms retain outside walls and do not end up as open stalls. 
- *   
-
+ * @author Johnny Clapham
+ *
  */
-
 public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 	
 	protected int[][] mazeMatrix;
@@ -31,11 +32,16 @@ public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 	
 	
 	
+	/**
+	 *Calls a listing function, then It loops through the created list and finds a random cell to work on, and makes its
+	 * value the same as its neighbor if a few base conditions are correct. If so, it calls the changeNeighborValue function.
+	 */
 	protected void generatePathways() {
 		mazeMatrix = generateMazeMatrix(); // initialize 2d array with desired dimensions
 		
 		
-		final ArrayList<Wall> cellsToAlter = new ArrayList<Wall>();//create array list for number of walls (mutable to account for skill level)
+		final ArrayList<Wall> cellsToAlter = new ArrayList<Wall>();//create array list for number of walls 
+																	//(mutable to account for skill level)
 		listTheWalls(cellsToAlter); // fill the list using method that also checks for illegal additions
 		
 		while(!cellsToAlter.isEmpty()) {
@@ -54,6 +60,11 @@ public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 		}
 	}
 	
+	/**
+	 * Does the work to generate a matrix in the form of a 2D array. This assigns a unique value
+	 * to each cell in the maze which is vital for Kruskal's algorithm.
+	 * @return
+	 */
 	private int[][] generateMazeMatrix(){
 		mazeMatrix = new int[width][height]; //new 2d array	
 		int filler = 0; // value to be assigned is initialized at 0
@@ -65,6 +76,14 @@ public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 		}return mazeMatrix;
 	}
 	
+	/**
+	 * 
+	 * "merges" two cells together.
+	 * @param cellX
+	 * @param nX
+	 * @param cellY
+	 * @param nY
+	 */
 	private void changeNeighbourVal(int cellX, int nX, int cellY, int nY){
 		int currCell = mazeMatrix[cellX][cellY];// find the current cell
 		int nCell = mazeMatrix[nX][nY]; // find the NEIGHBOR cell
@@ -78,6 +97,14 @@ public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 		mazeMatrix[nX][nY] = mazeMatrix[cellX][cellY]; // update neighbor to same value 
 	}
 	
+	/**
+	 * compares two cells to see if they have different values
+	 * @param cellX
+	 * @param nX
+	 * @param cellY
+	 * @param nY
+	 * @return
+	 */
 	private boolean twoCellsDifferentValues(int cellX, int nX, int cellY, int nY){
 		if(mazeMatrix[cellX][cellY] == mazeMatrix[nX][nY]){
 			return false;
@@ -87,11 +114,16 @@ public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 	
 	
 
+    /**
+     * adds all of the walls contained within the maze to a list. Walls added cannot be border walls.
+     * @param walls
+     */
     private void listTheWalls(ArrayList<Wall> walls){
     	for (int i = 0; i < width; i++) {// loop through maze and assign a unique number (filler) for each cell
 			for (int m = 0;  m< height; m++) {
 				for (CardinalDirection currentDirection : CardinalDirection.values()) {
-					Wall wall = new Wall(i, m, currentDirection);     // attribute new values to wall object at the specified position
+					Wall wall = new Wall(i, m, currentDirection);     // attribute new values to wall object at 
+																	//the specified position
 					if (cells.canDelete(wall)){        // if wall is valid (not border) add it to our wall list
 						walls.add(wall); 
 					}
@@ -106,6 +138,11 @@ public class MazeBuilderKruskal extends MazeBuilder implements Runnable {
 	
 
 
+	/**
+	 * fetches a random cell in our "cellsToAlter" list and returns it.
+	 * @param cellsToAlter
+	 * @return
+	 */
 	private Wall getRandomCellToWorkOn(ArrayList<Wall> cellsToAlter) {
 		// fetch a random cell to work on
 		return cellsToAlter.remove(random.nextIntWithinInterval(0, cellsToAlter.size()-1)); 
