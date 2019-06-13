@@ -27,7 +27,7 @@ import generation.MazeConfiguration;
  *
  * This code is refactored code from Maze.java by Paul Falstad, 
  * www.falstad.com, Copyright (C) 1998, all rights reserved
- * Paul Falstad granted permission to modify and use code for teaching purposes.
+ * Paul Falstad granted permission to modify and use code for teaching purposes. 
  * Refactored by Peter Kemper
  */
 public class StatePlaying extends DefaultState {
@@ -38,9 +38,9 @@ public class StatePlaying extends DefaultState {
     
     MazeConfiguration mazeConfig ; 
     
-    private boolean showMaze;           // toggle switch to show overall maze on screen
-    private boolean showSolution;       // toggle switch to show solution in overall maze on screen
-    private boolean mapMode; // true: display map of maze, false: do not display map of maze
+    public boolean showMaze;           // toggle switch to show overall maze on screen
+    public boolean showSolution;       // toggle switch to show solution in overall maze on screen
+    public boolean mapMode; // true: display map of maze, false: do not display map of maze
     // mapMode is toggled by user keyboard input, causes a call to drawMap during play mode
 
     // current position and direction with regard to MazeConfiguration
@@ -330,7 +330,7 @@ public class StatePlaying extends DefaultState {
      * updates the screen and the internal direction
      * @param dir for current direction, values are either 1 or -1
      */
-    synchronized private void rotate(int dir) {
+    synchronized void rotate(int dir) {
         final int originalAngle = angle;
         final int steps = 4;
 
