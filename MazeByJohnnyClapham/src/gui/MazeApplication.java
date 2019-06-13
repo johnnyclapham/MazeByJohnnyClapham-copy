@@ -24,6 +24,11 @@ public class MazeApplication extends JFrame {
 
 	// not used, just to make the compiler, static code checker happy
 	private static final long serialVersionUID = 1L;
+	private KeyListener kl ;
+
+	private Controller controller ;
+	private RobotDriver robotDriver;
+	private BasicRobot robot;
 
 	/**
 	 * Constructor
@@ -93,6 +98,9 @@ public class MazeApplication extends JFrame {
 	    return result;
 	}
 
+
+	 
+	 
 	/**
 	 * Initializes some internals and puts the game on display.
 	 * @param parameter can identify a generation method (Prim, Kruskal, Eller)
@@ -131,13 +139,52 @@ public class MazeApplication extends JFrame {
 	 */
 	public static void main(String[] args) {
 	    JFrame app ; 
-		switch (args.length) {
-		case 1 : app = new MazeApplication(args[0]);
-		break ;
-		case 0 : 
-		default : app = new MazeApplication() ;
-		break ;
-		}
+		
+	    
+	    if (args.equals("-g")) {
+            if (args.equals("-Prim")) {
+                //-g Prim for Prim’s algorithm
+
+                }
+            else if (args.equals("-Kruskal"){
+            	
+            	//-g Kruskal for Kruskal’s algorithm
+            }
+                
+            else {
+            	// no param
+            }
+                
+        }
+	    
+	    else if (args.equals("-d")) {
+            if (args.equals("-Prim")) {
+                //-d Prim for Prim’s algorithm
+
+                }
+            else if (args.equals("-Kruskal"){
+            	
+            	//-d Kruskal for Kruskal’s algorithm
+            }
+                
+            else {
+            	// no param
+            }
+                
+        }
+	    
+	    else {
+	    	if (args.equals("-f "+ filename )) {
+                //-f filename
+
+                }
+	    	
+	    	else {
+	    		//no param
+	    	}
+	    }
+	    
+	    
 		app.repaint() ;
 	}
 
