@@ -38,6 +38,8 @@ public class StatePlaying extends DefaultState {
     
     MazeConfiguration mazeConfig ; 
     
+    BasicRobot robot;
+    RobotDriver driver;
     public boolean showMaze;           // toggle switch to show overall maze on screen
     public boolean showSolution;       // toggle switch to show solution in overall maze on screen
     public boolean mapMode; // true: display map of maze, false: do not display map of maze
@@ -183,6 +185,18 @@ public class StatePlaying extends DefaultState {
                 draw() ;
             }
             break;
+            
+        case Solve:
+        	
+        	try {
+				control.driver.drive2Exit();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
+        	break;
+            
         case ToggleLocalMap: // show local information: current position and visible walls
             // precondition for showMaze and showSolution to be effective
             // acts as a toggle switch

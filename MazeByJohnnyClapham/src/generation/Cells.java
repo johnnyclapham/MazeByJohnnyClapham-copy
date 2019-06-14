@@ -72,8 +72,8 @@ public class Cells {
 	//west  = (-1,0)
 	//north = (0,-1)
 	
-	private int width;
-	private int height ;
+	public int width;
+	public int height ;
 	private int[][] cells; // width x height array of cells, cells[width][height]
 	// each cell contains an integer which encodes presence/absence of walls
 	// cells[i][j] can be read as (i,j) coordinates much like (x,y) coordinates

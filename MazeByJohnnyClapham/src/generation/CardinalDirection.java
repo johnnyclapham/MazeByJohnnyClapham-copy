@@ -43,6 +43,27 @@ public enum CardinalDirection {
 			throw new RuntimeException("Inconsistent enum type") ;
 		}
 	}
+	
+	/**
+	 * Gives the direction that results from a 90 degree counter clockwise rotation
+	 * applied to the current direction. Added to help BasicRobot
+	 * @return
+	 */
+	public CardinalDirection rotateCounterClockwise(){
+		switch(this) {
+		case North:
+			return CardinalDirection.West;
+		case East:
+			return CardinalDirection.North;
+		case West:
+			return CardinalDirection.South;
+		case South:
+			return CardinalDirection.East;
+		default:
+			throw new RuntimeException("Inconsistent enum type");
+		}
+	}
+	
 	/** 
 	 * Gives the opposite direction which is the same as applying a 180 degree
 	 * rotation. 

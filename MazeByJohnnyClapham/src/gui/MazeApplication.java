@@ -24,8 +24,8 @@ public class MazeApplication extends JFrame {
 
 	// not used, just to make the compiler, static code checker happy
 	private static final long serialVersionUID = 1L;
-	private KeyListener kl ;
 
+	private KeyListener kl ;
 	private Controller controller ;
 	private RobotDriver robotDriver;
 	private BasicRobot robot;
@@ -34,18 +34,119 @@ public class MazeApplication extends JFrame {
 	 * Constructor
 	 */
 	public MazeApplication() {
-		init(null);
+		super() ;
+		System.out.println("MazeApplication: maze will be generated with a randomized algorithm.");
+		controller = new Controller() ;
+		init() ;
 	}
-
+	
+		
 	/**
 	 * Constructor that loads a maze from a given file or uses a particular method to generate a maze
 	 * @param parameter can identify a generation method (Prim, Kruskal, Eller)
      * or a filename that stores an already generated maze that is then loaded, or can be null
 	 */
 	public MazeApplication(String parameter) {
-		init(parameter);
+		super() ;
+		// scan parameters
+		
+		// Case 1: Prim
+		if ("Prim".equalsIgnoreCase(parameter))
+		{
+			System.out.println("Generating Maze from Prim.");
+			controller = createController("Prim");
+			init() ;
+			return ;
+		}
+		
+		// Case 2: Kruskal
+		if ("Kruskal".equalsIgnoreCase(parameter))
+		{
+			System.out.println("Generating Maze from Kruskal.");
+			controller = createController("Kruskal");
+			init();
+			return;
+		}
+		
+		// Case 3: a file
+		File f = new File(parameter) ;
+		if (f.exists() && f.canRead())
+		{
+			System.out.println("Generating maze from file: " + parameter);
+	
+			controller = createController(parameter);
+			init();
+			return ;
+		}
+		
+		// Default case: 
+		System.out.println("Default Mode.");
+		controller = new Controller();
+		init() ;
 	}
 
+	
+
+	public MazeApplication(String builder, String driver) 
+	{
+		if ("Prim".equalsIgnoreCase(builder)) {
+			System.out.println("Generating Maze from Prim.");
+			controller = createController("Prim");
+			if ("Wallfollower".equalsIgnoreCase(driver)) {
+				System.out.println("Running Wallfollower Robot");
+				this.robotDriver = new WallFollower();
+			
+				this.robot = new BasicRobot();
+				
+				this.robotDriver.setRobot(this.robot);
+				
+				controller.setRobotAndDriver(this.robot, this.robotDriver);
+			}
+			init();
+			return;
+		}
+		
+		if ("Kruskal".equalsIgnoreCase(builder)) {
+			System.out.println("Generating Maze from Kruskal.");
+			controller = createController("Kruskal");
+			if ("Wallfollower".equalsIgnoreCase(driver)) {
+				System.out.println("Running Wallfollower Robot");
+				this.robotDriver = new WallFollower();
+				
+				this.robot = new BasicRobot();
+				
+				this.robotDriver.setRobot(this.robot);
+				
+				controller.setRobotAndDriver(this.robot, this.robotDriver);
+			}
+			init();
+			return;
+		}
+		
+		File f = new File(builder) ;
+		if (f.exists() && f.canRead())
+		{
+			System.out.println("Generating Maze from file: " + builder);
+			controller = createController(builder);
+			if ("Wallfollower".equalsIgnoreCase(driver)) {
+				System.out.println("Running Wallfollower Robot");
+				this.robotDriver = new WallFollower();
+				
+				this.robot = new BasicRobot();
+				
+				this.robotDriver.setRobot(this.robot);
+				
+				controller.setRobotAndDriver(this.robot, this.robotDriver);
+			}
+			init();
+			return ;
+		}
+	}
+	
+	
+	
+	
+	
 	/**
 	 * Instantiates a controller with settings according to the given parameter.
 	 * @param parameter can identify a generation method (Prim, Kruskal, Eller)
@@ -106,9 +207,9 @@ public class MazeApplication extends JFrame {
 	 * @param parameter can identify a generation method (Prim, Kruskal, Eller)
      * or a filename that contains a generated maze that is then loaded, or can be null
 	 */
-	private void init(String parameter) {
+	private void init() {
 	    // instantiate a game controller and add it to the JFrame
-	    Controller controller = createController(parameter);
+	    //Controller controller = createController(parameter);
 		add(controller.getPanel()) ;
 		// instantiate a key listener that feeds keyboard input into the controller
 		// and add it to the JFrame
@@ -122,6 +223,7 @@ public class MazeApplication extends JFrame {
 		setFocusable(true) ;
 		// start the game, hand over control to the game controller
 		controller.start();
+	//	WallFollower.drive2Exit();
 	}
 	
 	/**
@@ -139,52 +241,25 @@ public class MazeApplication extends JFrame {
 	 */
 	public static void main(String[] args) {
 	    JFrame app ; 
-		
-	    
-	    if (args.equals("-g")) {
-            if (args.equals("-Prim")) {
-                //-g Prim for Prim’s algorithm
-
-                }
-            else if (args.equals("-Kruskal"){
-            	
-            	//-g Kruskal for Kruskal’s algorithm
-            }
-                
-            else {
-            	// no param
-            }
-                
-        }
-	    
-	    else if (args.equals("-d")) {
-            if (args.equals("-Prim")) {
-                //-d Prim for Prim’s algorithm
-
-                }
-            else if (args.equals("-Kruskal"){
-            	
-            	//-d Kruskal for Kruskal’s algorithm
-            }
-                
-            else {
-            	// no param
-            }
-                
-        }
-	    
-	    else {
-	    	if (args.equals("-f "+ filename )) {
-                //-f filename
-
-                }
-	    	
-	    	else {
-	    		//no param
-	    	}
-	    }
-	    
-	    
+	//    MazeApplication app ; 
+		switch (args.length) {
+		case 4: 
+			app = new MazeApplication(args[1], args[3]);
+			break;
+		case 3: 
+			app = new MazeApplication(args[0], args[2]);
+			break;
+		case 2 :
+			app = new MazeApplication(args[1]);
+			break ;
+		case 1: 
+			app = new MazeApplication(args[0]);
+			break;
+		case 0 : 
+		default : 
+			app = new MazeApplication() ;
+			break ;
+		}
 		app.repaint() ;
 	}
 

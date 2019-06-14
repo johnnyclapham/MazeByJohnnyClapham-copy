@@ -29,7 +29,7 @@ public class Constants {
 	public enum StateGUI { STATE_TITLE, STATE_GENERATING, STATE_PLAY, STATE_FINISH; }
 	
 	// Possible user input  
-	public enum UserInput {ReturnToTitle, Start, Up, Down, Left, Right, Jump, ToggleLocalMap, ToggleFullMap, ToggleSolution, ZoomIn, ZoomOut };
+	public enum UserInput {Solve, ReturnToTitle, Start, Up, Down, Left, Right, Jump, ToggleLocalMap, ToggleFullMap, ToggleSolution, ZoomIn, ZoomOut };
 
 	// fixing a value matching the escape key
 	final static int ESCAPE = 27;

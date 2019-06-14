@@ -45,6 +45,9 @@ public class SimpleKeyListener implements KeyListener {
 			
 		// translate keyboard input into operation for MazeController
 		switch (key) {
+		case 'b' :
+			uikey = UserInput.Solve;
+			break;
 		case ('w' & 0x1f): // Ctrl-w makes a step forward even through a wall
 			uikey = UserInput.Jump;
 			break;
