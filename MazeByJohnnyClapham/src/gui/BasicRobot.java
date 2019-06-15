@@ -26,7 +26,7 @@ public class BasicRobot implements Robot{
 	protected CardinalDirection direction;
 	protected StateGUI statae;
 	protected StatePlaying state;
-	protected Controller maze;
+	protected Controller controller;
 	protected Cells cellValues;
 	protected boolean hasStopped;
 	protected int[] currentPosition;
@@ -34,19 +34,23 @@ public class BasicRobot implements Robot{
 	
 
 	public BasicRobot() {
-		this.forwardDistSensor = true;
-		this.backwardDistSensor = true;
-		this.leftwardDistSensor = true;
-		this.rightwardDistSensor = true;
+		
+		//this.statePlaying = controller.currentState();
+	
+		batteryLevel = 2000;
 		
 		this.currentPosition = new int[2];
 		this.currentPosition[0] = 0;
 		this.currentPosition[1] = 0;
-		this.hasStopped = false;
+		this.controller = null;
+		//this.state = null;
 		direction = CardinalDirection.East; 
-		this.maze = null;
-	
-		batteryLevel = 2000;
+		this.hasStopped = false;
+		
+		this.forwardDistSensor = true;
+		this.backwardDistSensor = true;
+		this.leftwardDistSensor = true;
+		this.rightwardDistSensor = true;
 		
 	}
 	
@@ -97,10 +101,10 @@ public class BasicRobot implements Robot{
 
 	@Override
 	public void move(int distance, boolean manual) {
-		this.currentPosition = maze.getCurrentPosition();
+		//this.currentPosition = controller.getCurrentPosition();
 		
 		while(distance > 0){
-			this.currentPosition = this.state.getCurrentPosition();
+			this.currentPosition = controller.getCurrentPosition();
 			if(batteryLevel >= 4){
 				if(manual == true){
 					distance = 1;
@@ -112,25 +116,61 @@ public class BasicRobot implements Robot{
 				
 					case West: // decrease X
 						this.currentPosition[0]--;
+						
+						/*
+						 * PROBLEM!!
+						 * robot position is adjusted but not the on screen position, attempt in calling
+						 * an artificial keypress to invoke the robot to move forward in the desired direction.
+						 * not working. Line commented below
+						 */
+					//	this.state.KeyDown(UserInput.Left, 0);
+						
+						
+						
+						System.out.printf("WEST"); 
+						
+						pathLength ++; // increase
+						distance--; // decrease counter for termination
+						batteryLevel -= 4; // -4 battery level after a move
 						break;
 					
 					case East: // increase X
 						this.currentPosition[0]++;
+						System.out.printf("EAST"); 
+				
+						pathLength ++; // increase
+						distance--; // decrease counter for termination
+						batteryLevel -= 4; // -4 battery level after a move
 						break;
 					
 					case North: // decrease Y
 						this.currentPosition[1]--;
+						System.out.printf("NORTH"); 
+				
+						pathLength ++; // increase
+						distance--; // decrease counter for termination
+						batteryLevel -= 4; // -4 battery level after a move
 						break;
 					
 					case South: // increase Y
 						this.currentPosition[1]++;
+						System.out.printf("SOUTH"); 
+						//System.out.printf("distance:");
+						//System.out.print(distance); 
+						//System.out.printf("pathlength:");
+						//System.out.print(pathLength); 
+						//System.out.printf("battery:");
+						//System.out.print(batteryLevel);
+						pathLength ++; // increase
+						distance--; // decrease counter for termination
+						batteryLevel -= 4; // -4 battery level after a move
 						break;
 				}
 				// set new maze properties after move has occurred
-				pathLength ++; // increases after every move
-				distance--; // counter decrement so loop terminates eventually
-				batteryLevel -= 4; // -4 battery level after a move
-				this.state.setCurrentPosition(this.currentPosition[0], this.currentPosition[1]);
+				//pathLength ++; // increases after every move
+				//distance--; // counter decrement so loop terminates eventually
+				//batteryLevel -= 4; // -4 battery level after a move
+				//this.state.setCurrentPosition(this.currentPosition[0], this.currentPosition[1]);
 				
 		
 				
@@ -153,29 +193,29 @@ public class BasicRobot implements Robot{
 		return this.currentPosition;
 	}
 
+	
+	
+	
+	/**
+	 * Provides the robot with a reference to the controller to cooperate with.
+	 * The robot memorizes the controller such that this method is most likely called only once
+	 * and for initialization purposes. The controller serves as the main source of information
+	 * for the robot about the current position, the presence of walls, the reaching of an exit.
+	 * The controller is assumed to be in the playing state.
+	 * @param controller is the communication partner for robot
+	 * @precondition controller != null, controller is in playing state and has a maze
+	 */
 	@Override
-	public void setMaze(Controller controller) {
-		this.maze = controller;
-		this.cellValues = this.mazeConfig.getMazecells();
-		this.currentPosition = this.maze.getCurrentPosition();
-		cellValues = new Cells(this.mazeConfig.getWidth(), this.mazeConfig.getHeight());
-		cellValues = this.mazeConfig.getMazecells();
-
+	public void setMaze(Controller maze) {
+		this.controller = maze;
 		
-		int[] whichDirection = new int [2];
-		whichDirection = this.direction.getDirection();
-		if(whichDirection[0] == 1 && whichDirection[1] == 0){
+		this.cellValues = this.controller.getMazeConfiguration().getMazecells();
+		this.currentPosition = this.controller.getCurrentPosition();
+		
+		int[] directional = new int [2];
+		directional = this.direction.getDirection();
+		if(directional[0] == 1 && directional[1] == 0){
 			this.direction = CardinalDirection.East;
-		}
-		else if (whichDirection[0] == 0 && whichDirection[1] == -1) {
-			this.direction = CardinalDirection.North;
-		}
-		else if (whichDirection[0] == 0 && whichDirection[1] == 1) {
-			this.direction = CardinalDirection.South;
-		}
-		
-		else {
-			this.direction = CardinalDirection.West;
 		}
 	}
 
@@ -211,7 +251,7 @@ public class BasicRobot implements Robot{
 
 	@Override
 	public CardinalDirection getCurrentDirection() {
-		return maze.getCurrentDirection();
+		return controller.getCurrentDirection();
 	}
 
 	@Override
@@ -281,8 +321,8 @@ public class BasicRobot implements Robot{
 			
 			// make counter for stepcount
 			int count = 0;
-			int cellX = this.maze.getCurrentPosition()[0];
-			int cellY = this.maze.getCurrentPosition()[1];
+			int cellX = this.controller.getCurrentPosition()[0];
+			int cellY = this.controller.getCurrentPosition()[1];
 			//start looping
 			while (true) {
 				if (cellX < 0 || cellX >= cellValues.width || cellY < 0 || cellY >= cellValues.height) {
