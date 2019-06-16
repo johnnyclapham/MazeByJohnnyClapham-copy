@@ -10,11 +10,12 @@ import gui.Constants.UserInput;
 public class WallFollower implements RobotDriver {
 	protected int[][] cellValues;
 	protected BasicRobot robot;
-	protected Distance distance;
-	protected int pathLength;
 	protected Controller controller;
 	protected CardinalDirection direction;
 	protected StatePlaying state;
+	protected Distance distance;
+	protected int pathLength;
+
 	
 	
 	public WallFollower() {
@@ -51,79 +52,86 @@ public class WallFollower implements RobotDriver {
 	}
 	@Override
 	public boolean drive2Exit() throws Exception {
+		//PRESS 'b' to initiate the drive2exit (lowercase)
+		
+		
 		this.state = (StatePlaying) controller.states[2];
 		this.state.showMaze = true;
 		this.state.showSolution = true;
 		this.state.mapMode = true;
 		
-		System.out.printf("-drive starts");
+		System.out.printf("-START DRIVING");
 		
-		while (!robot.isAtExit()) {
+		while (!robot.isAtExit()) {// while not at an exit
 			if (BasicRobot.batteryLevel != 0) {
-				if (robot.distanceToObstacle(Direction.FORWARD) > 0) {
-					System.out.printf("going FORWARD");
+				// if senses wall on left and forward space, keep going forward
+				if (robot.distanceToObstacle(Direction.FORWARD) > 0 && 
+						robot.distanceToObstacle(Direction.LEFT) == 0 ) {
+					System.out.printf("going FORWARD."+ '\n'+ "battery:"+ 
+						BasicRobot.batteryLevel+ '\n');
 					robot.move(1, false);
-					Thread.sleep(100);
+					//Thread.sleep(600);
 				}
-				else if (robot.distanceToObstacle(Direction.LEFT) > 0) {
-					    System.out.printf("going LEFT");
-						robot.rotate(Turn.LEFT);
-						state.keyDown(UserInput.Left, 0);
-						robot.move(1, false);
-					
-					}
-					else if (robot.distanceToObstacle(Direction.RIGHT) > 0) {
-						System.out.printf("going RIGHT");
-						robot.rotate(Turn.RIGHT);
-						state.keyDown(UserInput.Right, 0);
-						robot.move(1, false);
-						Thread.sleep(100);
-						
-					}
-					else {
-						System.out.printf("going AROUND");
-						robot.rotate(Turn.AROUND);
-						state.keyDown(UserInput.Right, 0);
-						state.keyDown(UserInput.Right, 0);
-						robot.move(1, false);
-						Thread.sleep(100);
-					}
+				else {
+					// if space on left, rotate and move forward
+					if (robot.distanceToObstacle(Direction.LEFT) > 0) {
 				
-				this.pathLength++;
-			}
+				
+				    System.out.printf("going LEFT."+ '\n'+ "battery:"+ 
+				    BasicRobot.batteryLevel+ '\n');
+					robot.rotate(Turn.LEFT);
+					//state.keyDown(UserInput.Left, 0);
+					robot.move(1, false);
+				//	Thread.sleep(600);
+					}
+					
+				
+					//if space right, turn right and move forward
+				else if (robot.distanceToObstacle(Direction.RIGHT) > 0) {
+					System.out.printf("going RIGHT."+ '\n'+ "battery:"+ 
+				BasicRobot.batteryLevel+ '\n');
+					robot.rotate(Turn.RIGHT);
+					//state.keyDown(UserInput.Right, 0);
+					robot.move(1, false);
+				//	Thread.sleep(600);
+					
+				}
+				
+					// if something else (all other cases) turn around 
+				else {//if (robot.distanceToObstacle(Direction.RIGHT) == 0 && robot.distanceToObstacle(Direction.FORWARD) == 0 &&  robot.distanceToObstacle(Direction.LEFT)==0) {
+					System.out.printf("Turning AROUND."+ '\n'+ "battery:"+
+				BasicRobot.batteryLevel+ '\n');
+					robot.rotate(Turn.AROUND);
+					//robot.rotate(Turn.RIGHT);
+					//state.keyDown(UserInput.Right, 0);
+					//state.keyDown(UserInput.Right, 0);
+					robot.move(1, false);
+				//	Thread.sleep(600);
+					
+				}
+				}
+				
+			pathLength++;
+			} 
 			else {
 				return false;
 			}
 		}
 		
 		
-		// if robot reaches one of the following conditions (sees exit L, R, B, F) 
-		// FINISH GAME
 		
-		if (robot.canSeeExit(Direction.LEFT)) {
-			robot.statae = Constants.StateGUI.STATE_FINISH;
-		
-		}
-		else if (robot.canSeeExit(Direction.RIGHT)) {
-			robot.statae = Constants.StateGUI.STATE_FINISH;
-			
-		}
-		else if (robot.canSeeExit(Direction.BACKWARD)) {
-			robot.statae = Constants.StateGUI.STATE_FINISH;
-		
-		}
-		else if (robot.canSeeExit(Direction.FORWARD)) {
-			robot.statae = Constants.StateGUI.STATE_FINISH;
-	
-		}
-		BasicRobot.batteryLevel = 2000;
-		BasicRobot.pathLength = 0;
-		
-		System.out.println("Game has ended. " + BasicRobot.batteryLevel + "battery remaining.");
+
+		System.out.println("You won!");
+		System.out.println("Game has ended. " + BasicRobot.batteryLevel 
+				+ " battery remaining.");
 		System.out.println(getEnergyConsumption() + " battery was used.");
-		System.out.println("Goodbye!");
+		System.out.println("It took:" + pathLength + " moves to reach the exit.");
+		System.out.println("Try a higher difficulty! Can you break the robot? If "
+				+ "it runs out of battery before "+ "completion, you lose!");
+		this.controller.switchFromPlayingToWinning(pathLength);
 		return true;
 	}
+	
 	
 	
 	@Override

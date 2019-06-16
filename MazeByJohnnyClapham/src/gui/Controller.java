@@ -273,6 +273,11 @@ public class Controller {
     public int[] getCurrentPosition() {
         return ((StatePlaying)states[2]).getCurrentPosition();
     }
+    
+    
+    public void setCurrentPosition(int x, int y) {
+    ((StatePlaying)states[2]).setCurrentPosition( x,  y);
+    }
     /**
      * Provides access to the current direction.
      * The controller keeps track of the current position
@@ -283,5 +288,7 @@ public class Controller {
     public CardinalDirection getCurrentDirection() {
         return ((StatePlaying)states[2]).getCurrentDirection();
     }
+    
+    
     
 }

@@ -11,20 +11,13 @@ import gui.Constants.UserInput;
  */
 public class BasicRobot implements Robot{
 	
-	/*
-	 * Class handles the user interaction.
- * It implements a state-dependent behavior that controls the display and reacts to key board input from a user.
- * At this point user keyboard input is first dealt with a key listener (SimpleKeyListener)
- * and then handed over to a MazeController object by way of the keyDown method.
- *
-	 */
 	public boolean forwardDistSensor;
 	public boolean backwardDistSensor;
 	public boolean leftwardDistSensor;
 	public boolean rightwardDistSensor;
 	static int pathLength = 0;
 	protected static float batteryLevel;
-	protected CardinalDirection direction;
+	protected CardinalDirection currentDirection;
 	protected StateGUI statae;
 	protected StatePlaying state;
 	protected Controller controller;
@@ -44,14 +37,15 @@ public class BasicRobot implements Robot{
 		this.currentPosition[0] = 0;
 		this.currentPosition[1] = 0;
 		this.controller = null;
+		this.state = null;
 		
-		direction = CardinalDirection.East; 
-		this.hasStopped = false;
+		currentDirection = CardinalDirection.East; 
+		hasStopped = false;
 		
-		this.forwardDistSensor = true;
-		this.backwardDistSensor = true;
-		this.leftwardDistSensor = true;
-		this.rightwardDistSensor = true;
+		forwardDistSensor = true;
+		backwardDistSensor = true;
+		leftwardDistSensor = true;
+		rightwardDistSensor = true;
 		
 	}
 	
@@ -65,7 +59,8 @@ public class BasicRobot implements Robot{
 		case RIGHT:
 			// check battery, if level is OK proceed
 			if (batteryLevel >= 3) {
-				direction = direction.rotateClockwise();
+				currentDirection = currentDirection.rotateClockwise();
+				controller.keyDown(UserInput.Right, 0);
 				batteryLevel -= 3;
 			}
 			// no battery to proceed
@@ -77,7 +72,8 @@ public class BasicRobot implements Robot{
 		case LEFT:
 			// check battery, if level is OK proceed
 			if (batteryLevel>= 3) {
-				direction = direction.rotateCounterClockwise();
+				currentDirection = currentDirection.rotateCounterClockwise();
+				controller.keyDown(UserInput.Left, 0);
 				batteryLevel -= 3;
 			}
 			// no battery to proceed
@@ -89,7 +85,9 @@ public class BasicRobot implements Robot{
 		case AROUND:
 			// check battery, if level is OK proceed
 			if (batteryLevel >= 6) {
-				direction = direction.oppositeDirection();
+				currentDirection = currentDirection.oppositeDirection();
+				controller.keyDown(UserInput.Left, 0);
+				controller.keyDown(UserInput.Left, 0);
 				batteryLevel -= 6;
 			}
 			// no battery to proceed
@@ -100,19 +98,65 @@ public class BasicRobot implements Robot{
 	}
 }
 	//state.keyDown(UserInput.Left, 0);
+	
+	
+	
 	@Override
 	public void move(int distance, boolean manual) {
-		this.state = (StatePlaying) controller.states[2];
-		int[] startPosition = controller.getCurrentPosition();
-		System.out.println("Start Position: " + controller.getCurrentPosition()[0] + " " + controller.getCurrentPosition()[1]);
-	System.out.println("The move method in BasicRobot is called");
-		while (distance > 0 && !hasStopped) {
-			state.keyDown(UserInput.Up, 0);
-			if (startPosition[0] != controller.getCurrentPosition()[0] || startPosition[1] != controller.getCurrentPosition()[1]) {
-				batteryLevel -= 5;
-				pathLength++;
+		while (distance > 0) {
+			this.currentPosition = this.controller.getCurrentPosition();
+			
+			
+			if (batteryLevel >= 5) { // if enough battery, proceed
+				if (manual == true) {
+					distance = 1;
+				}
+				if (distanceToObstacle(Direction.FORWARD) > 0) {
+					
+					// switch for current direction so that you can make adjustments to position as necessary
+					switch(currentDirection) {
+					
+						case West: // -x direction decreases x
+							this.currentPosition[0]--;
+							batteryLevel = batteryLevel -5;
+							//controller.keyDown(UserInput.Up, 0);
+							break;
+						
+						case East: //+x direction increases x
+							this.currentPosition[0]++;
+							batteryLevel = batteryLevel -5;
+							//controller.keyDown(UserInput.Up, 0);
+							break;
+						
+						case North: // -y direction decreases y
+							this.currentPosition[1]--;
+							batteryLevel = batteryLevel -5;
+							//controller.keyDown(UserInput.Up, 0);
+							break;
+						
+						case South: // +y direction increases y
+							this.currentPosition[1]++;
+							batteryLevel = batteryLevel -5;
+							//controller.keyDown(UserInput.Up, 0);
+							break;
+					}
+					// make robot camera position match the new maze positions by calling the 'Up' user 
+					//input to move forward
+					controller.keyDown(UserInput.Up, 0);
+					batteryLevel -= 5; // move cost = 5
+					pathLength ++;
+					distance--; // counter for loop termination
+					
+				}
+				else {
+					hasStopped = true;
+					
+				}
 			}
-			distance--;
+			else {
+				hasStopped = true;
+				exitScreen();
+			}
 		}
 	}
 		
@@ -136,37 +180,55 @@ public class BasicRobot implements Robot{
 	 * @precondition controller != null, controller is in playing state and has a maze
 	 */
 	@Override
-	public void setMaze(Controller maze) {
-		this.controller = maze;
+	public void setMaze(Controller controller) {
+		//establish maze properties and pull configuration so it can be accessed later
+		this.controller = controller;
 		
 		this.cellValues = this.controller.getMazeConfiguration().getMazecells();
 		this.currentPosition = this.controller.getCurrentPosition();
 		
-		int[] directional = new int [2];
-		directional = this.direction.getDirection();
-		if(directional[0] == 1 && directional[1] == 0){
-			this.direction = CardinalDirection.East;
+		int[] whichDir = new int [2];
+		whichDir = currentDirection.getDirection();
+		
+			if (whichDir[0] == 0 && whichDir[1] == -1) {
+				currentDirection = CardinalDirection.North;
+			}
+			
+			else if (whichDir[0] == 1 && whichDir[1] == 0) {
+				currentDirection = CardinalDirection.East;
+			}
+			
+			else if (whichDir[0] == 0 && whichDir[1] == 1) {
+				currentDirection = CardinalDirection.South;
+			}
+			
+			else {
+				currentDirection = CardinalDirection.West;
+			}
 		}
-	}
 
 	@Override
 	public boolean isAtExit() {
-		return cellValues.isExitPosition(this.currentPosition[0], this.currentPosition[1]);
-	}
+		currentPosition = this.controller.getCurrentPosition();
+		    if(cellValues.isExitPosition(currentPosition[0], currentPosition[1])) {
+		    	hasStopped = true;
+		    }
+		    return cellValues.isExitPosition(currentPosition[0], currentPosition[1]);
+		}
+	
 
 	@Override
 	public boolean canSeeExit(Direction direction) throws UnsupportedOperationException {
-		if(this.hasDistanceSensor(direction) == true){
-			if(this.distanceToObstacle(direction) == Integer.MAX_VALUE){
-				return true;
-			}
-			else{
-				return false;
-			}
-		}
-		else{
+		assert hasDistanceSensor(direction);
+		if (!hasDistanceSensor(direction)) {
 			throw new UnsupportedOperationException();
 		}
+		if (distanceToObstacle(direction) != Integer.MAX_VALUE) {
+				return false;
+		}	
+		else {
+				return true;
+			}
 	}
 
 	@Override
@@ -193,7 +255,7 @@ public class BasicRobot implements Robot{
 	public void setBatteryLevel(float level) {
 		batteryLevel = level;
 		if(batteryLevel ==0) {
-			System.out.printf("Sorry, you lost. Battery is dead!");
+			System.out.printf('\n' + "Battery dies! You lose.");
 		}
 		
 	}
@@ -226,91 +288,131 @@ public class BasicRobot implements Robot{
 	}
 
 	@Override
-	public int distanceToObstacle(Direction direction) throws UnsupportedOperationException {
-if (this.hasDistanceSensor(direction)) {
+	public int distanceToObstacle(Direction direction) throws 
+								UnsupportedOperationException {
+		
+		assert hasDistanceSensor(direction);
+		
+		
+		if(!hasDistanceSensor(direction)) {
+				throw new UnsupportedOperationException();
+		}
+			int countedMoves = 0;
+			currentPosition = controller.getCurrentPosition();
+			int cellXcurrent = controller.getCurrentPosition()[0];
+			int cellYcurrent = controller.getCurrentPosition()[1];
 			
+			batteryLevel = batteryLevel - 1;
 			
-			// -1 battery for checking dist sensor
-			this.setBatteryLevel(batteryLevel - 1);
-			// retrieve card direction to see if cell has wall
-			CardinalDirection currDir;
-			if (direction == Direction.RIGHT) {
-				currDir = this.direction.rotateClockwise();
+			CardinalDirection SensDir;
+			SensDir = getCurrentDirection();
 			
-			}
-			else if (direction == Direction.BACKWARD) {
-				currDir = this.direction.oppositeDirection();
-			}
-			else if (direction == Direction.LEFT) {
-				currDir = this.direction.rotateCounterClockwise();
+			switch(direction) {
+			case FORWARD:
+				SensDir = getCurrentDirection();
+				break;	
+			
+			case RIGHT:
+				SensDir = getCurrentDirection().rotateCounterClockwise();
+				break;
+				
+			case LEFT:
+				SensDir = getCurrentDirection().rotateClockwise();
+				break;
+				
+			case BACKWARD:
+				SensDir = getCurrentDirection().oppositeDirection();
+				break;
 				
 			}
-			else {
-				currDir = this.direction;
-			}
+
+			int mazeWidth = cellValues.width;
+			int mazeHeight = cellValues.height;
 			
-			// make counter for stepcount
-			int count = 0;
-			int cellX = this.controller.getCurrentPosition()[0];
-			int cellY = this.controller.getCurrentPosition()[1];
-			//start looping
-			while (true) {
-				if (cellX < 0 || cellX >= cellValues.width || cellY < 0 || cellY >= cellValues.height) {
-					return Integer.MAX_VALUE;
+			while(true) {
+				if (cellXcurrent>= mazeWidth || cellYcurrent>=mazeHeight 
+						|| cellXcurrent < 0 || cellYcurrent<0){
+					return Integer.MAX_VALUE;	
 				}
-	
+				
 				else {
-					//switch for various directions
-					switch (currDir) {
-					
-					case East:
-						if (this.cellValues.hasWall(cellX, cellY, CardinalDirection.East)) {
-							return count;
-						}
-						cellX++;
-						break;
-					case West:
-						if (this.cellValues.hasWall(cellX, cellY, CardinalDirection.West)) {
-							return count;
-						}
-						cellX--;
-						break;
-					case North:
-						if (this.cellValues.hasWall(cellX, cellY, CardinalDirection.North)) {
-							return count;
-						}
-						cellY--;
-						break;
-					case South:
-						if (this.cellValues.hasWall(cellX, cellY, CardinalDirection.South)) {
-							return count;
-						}
-						cellY++;
-						break;
+				switch(SensDir){
+				
+				case North:
+					if(cellValues.hasWall(cellXcurrent, cellYcurrent,
+							CardinalDirection.North)){
+						return countedMoves;
 					}
-					count++;
+					cellYcurrent--;
+					break;	
+					
+				case East:
+					
+					if(cellValues.hasWall(cellXcurrent, cellYcurrent,
+							CardinalDirection.East)){
+						return countedMoves;
+					}
+					cellXcurrent++;
+					break;
+					
+				case South:
+					if(cellValues.hasWall(cellXcurrent, cellYcurrent,
+							CardinalDirection.South)){
+						return countedMoves;
+					}
+					cellYcurrent++;
+					break;
+					
+				case West:
+					if(cellValues.hasWall(cellXcurrent, cellYcurrent,
+							CardinalDirection.West)){
+						return countedMoves;
+					}
+					cellXcurrent--;
+					break;
+					
+				
+					
+				
+
 				}
-			}
-		}
-		else {
-			throw new UnsupportedOperationException();
-		}	}	
+				countedMoves++;
+
+			}	
+		}		
+	}
 
 	@Override
 	public boolean hasDistanceSensor(Direction direction) {
 		if (direction == Direction.FORWARD) {
-			return this.forwardDistSensor;
+			return forwardDistSensor;
 		}
 		else if (direction == Direction.BACKWARD) {
-			return this.backwardDistSensor;
+			return backwardDistSensor;
 		}
 		else if (direction == Direction.LEFT) {
-			return this.leftwardDistSensor;
+			return leftwardDistSensor;
 		}
 		else {
-			return this.rightwardDistSensor;
+			return rightwardDistSensor;
 		}
 	
+	}
+	
+	public static int getPathLength() {
+		return pathLength;
+		
+	}
+	
+	public void exitScreen() {
+		if(hasStopped()) {
+			this.controller.switchToTitle();
+			System.out.println("Game Over. Battery depleated.");
+		}
+		else {
+			return;
+		}
+		
 	}
 
 }

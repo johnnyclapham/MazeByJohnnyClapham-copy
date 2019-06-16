@@ -278,7 +278,7 @@ public class StatePlaying extends DefaultState {
     }
     ////////////////////////////// set methods ///////////////////////////////////////////////////////////////
     ////////////////////////////// Actions that can be performed on the maze model ///////////////////////////
-    protected void setCurrentPosition(int x, int y) {
+    public void setCurrentPosition(int x, int y) {
         px = x ;
         py = y ;
     }
