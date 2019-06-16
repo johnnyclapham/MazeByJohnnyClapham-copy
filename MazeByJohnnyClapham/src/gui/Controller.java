@@ -1,10 +1,8 @@
 package gui;
 
 import gui.Constants.UserInput;
-import generation.CardinalDirection;
-import generation.MazeConfiguration;
-import generation.Order;
 import generation.Order.Builder;
+import generation.*;
 
 
 /**
@@ -35,6 +33,11 @@ import generation.Order.Builder;
  * @author Peter Kemper
  */
 public class Controller {
+	
+	protected MazeConfiguration mazeConfig ;
+	//protected MazePanel panel ;
+    //protected BasicRobot robot;
+    //protected RobotDriver driver;
 	/**
 	 * The game has a reservoir of 4 states: 
 	 * 1: show the title screen, wait for user input for skill level
@@ -71,6 +74,7 @@ public class Controller {
      * The builder algorithm to use for generating a maze.
      */
     Order.Builder builder;
+    protected Factory factory;
     /**
      * Specifies if the maze is perfect, i.e., it has
      * no loops, which is guaranteed by the absence of 
@@ -88,6 +92,37 @@ public class Controller {
         panel = new MazePanel(); 
         fileName = null;
         builder = Order.Builder.DFS; // default
+        perfect = false; // default
+    }
+    
+    public Controller(Order.Builder builder)
+    {
+    	states = new State[4];
+        states[0] = new StateTitle();
+        states[1] = new StateGenerating();
+        states[2] = new StatePlaying();
+        states[3] = new StateWinning();
+        currentState = states[0];
+        panel = new MazePanel(); 
+        fileName = null;
+        setBuilder(builder) ;
+        perfect = false; // default
+    }
+    
+    public Controller(Order.Builder builder, RobotDriver driver){
+    	states = new State[4];
+        states[0] = new StateTitle();
+        states[1] = new StateGenerating();
+        states[2] = new StatePlaying();
+        states[3] = new StateWinning();
+        currentState = states[0];
+        this.robot = new BasicRobot();
+		this.driver = driver;
+		this.driver.setRobot(robot);
+        panel = new MazePanel(); 
+        fileName = null;
+        setBuilder(builder) ;
+        setRobotAndDriver(robot, driver);
         perfect = false; // default
     }
     
@@ -248,4 +283,5 @@ public class Controller {
     public CardinalDirection getCurrentDirection() {
         return ((StatePlaying)states[2]).getCurrentDirection();
     }
+    
 }

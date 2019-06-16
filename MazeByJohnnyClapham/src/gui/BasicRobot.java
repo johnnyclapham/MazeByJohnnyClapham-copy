@@ -3,6 +3,7 @@ import generation.Cells;
 import generation.CardinalDirection;
 import generation.MazeConfiguration;
 import gui.Constants.StateGUI;
+import gui.Constants.UserInput;
 
 /**
  * @author Johnny Clapham
@@ -43,7 +44,7 @@ public class BasicRobot implements Robot{
 		this.currentPosition[0] = 0;
 		this.currentPosition[1] = 0;
 		this.controller = null;
-		//this.state = null;
+		
 		direction = CardinalDirection.East; 
 		this.hasStopped = false;
 		
@@ -98,93 +99,22 @@ public class BasicRobot implements Robot{
 			break;
 	}
 }
-
+	//state.keyDown(UserInput.Left, 0);
 	@Override
 	public void move(int distance, boolean manual) {
-		//this.currentPosition = controller.getCurrentPosition();
-		
-		while(distance > 0){
-			this.currentPosition = controller.getCurrentPosition();
-			if(batteryLevel >= 4){
-				if(manual == true){
-					distance = 1;
-				}
-				if (distanceToObstacle(Direction.FORWARD) > 0) {
-				
-				// switch to see which direction the robot is facing so it can make appropriate move
-				switch(direction) {
-				
-					case West: // decrease X
-						this.currentPosition[0]--;
-						
-						/*
-						 * PROBLEM!!
-						 * robot position is adjusted but not the on screen position, attempt in calling
-						 * an artificial keypress to invoke the robot to move forward in the desired direction.
-						 * not working. Line commented below
-						 */
-					//	this.state.KeyDown(UserInput.Left, 0);
-						
-						
-						
-						System.out.printf("WEST"); 
-						
-						pathLength ++; // increase
-						distance--; // decrease counter for termination
-						batteryLevel -= 4; // -4 battery level after a move
-						break;
-					
-					case East: // increase X
-						this.currentPosition[0]++;
-						System.out.printf("EAST"); 
-				
-						pathLength ++; // increase
-						distance--; // decrease counter for termination
-						batteryLevel -= 4; // -4 battery level after a move
-						break;
-					
-					case North: // decrease Y
-						this.currentPosition[1]--;
-						System.out.printf("NORTH"); 
-				
-						pathLength ++; // increase
-						distance--; // decrease counter for termination
-						batteryLevel -= 4; // -4 battery level after a move
-						break;
-					
-					case South: // increase Y
-						this.currentPosition[1]++;
-						System.out.printf("SOUTH"); 
-						//System.out.printf("distance:");
-						//System.out.print(distance); 
-						//System.out.printf("pathlength:");
-						//System.out.print(pathLength); 
-						//System.out.printf("battery:");
-						//System.out.print(batteryLevel);
-						pathLength ++; // increase
-						distance--; // decrease counter for termination
-						batteryLevel -= 4; // -4 battery level after a move
-						break;
-				}
-				// set new maze properties after move has occurred
-				//pathLength ++; // increases after every move
-				//distance--; // counter decrement so loop terminates eventually
-				//batteryLevel -= 4; // -4 battery level after a move
-				//this.state.setCurrentPosition(this.currentPosition[0], this.currentPosition[1]);
-				
-		
-				
+		this.state = (StatePlaying) controller.states[2];
+		int[] startPosition = controller.getCurrentPosition();
+		System.out.println("Start Position: " + controller.getCurrentPosition()[0] + " " + controller.getCurrentPosition()[1]);
+	System.out.println("The move method in BasicRobot is called");
+		while (distance > 0 && !hasStopped) {
+			state.keyDown(UserInput.Up, 0);
+			if (startPosition[0] != controller.getCurrentPosition()[0] || startPosition[1] != controller.getCurrentPosition()[1]) {
+				batteryLevel -= 5;
+				pathLength++;
 			}
-			else {
-				hasStopped = true;
-			}
-		}
-		else {
-			hasStopped = true;
-			}
+			distance--;
 		}
 	}
-
 		
 	
 
@@ -297,7 +227,7 @@ public class BasicRobot implements Robot{
 
 	@Override
 	public int distanceToObstacle(Direction direction) throws UnsupportedOperationException {
-		if (this.hasDistanceSensor(direction)) {
+if (this.hasDistanceSensor(direction)) {
 			
 			
 			// -1 battery for checking dist sensor
@@ -364,8 +294,7 @@ public class BasicRobot implements Robot{
 		}
 		else {
 			throw new UnsupportedOperationException();
-		}
-	}	
+		}	}	
 
 	@Override
 	public boolean hasDistanceSensor(Direction direction) {

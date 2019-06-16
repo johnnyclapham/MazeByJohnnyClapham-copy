@@ -187,15 +187,28 @@ public class StatePlaying extends DefaultState {
             break;
             
         case Solve:
-        	
-        	try {
-				control.driver.drive2Exit();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        	
-        	break;
+        	robot = new BasicRobot();
+        	//this.driver = driver(); WallFollower
+        	driver = new WallFollower();
+        	control.setRobotAndDriver(robot, driver);
+        	//driver.drive2Exit();
+        	//driver = setrobot();
+        	System.out.print(robot);
+        	System.out.print(driver);
+        	if (driver != null && robot != null) {
+        		System.out.printf("%n");
+        		mazeConfig = control.getMazeConfiguration();
+                driver.setDimensions(this.mazeConfig.getWidth(), this.mazeConfig.getHeight());
+                driver.setDistance(this.mazeConfig.getMazedists());
+                driver.setRobot(robot);
+                robot.setMaze(control);
+                try {
+                    driver.drive2Exit();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             
         case ToggleLocalMap: // show local information: current position and visible walls
             // precondition for showMaze and showSolution to be effective
